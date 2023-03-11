@@ -1,0 +1,18 @@
+kubernetes:
+  children:
+    master:
+      hosts:
+%{for vm in masters~}
+        ${vm.name}:
+          ansible_user: ${vm.user}
+          ansible_host: ${vm.ipaddress}
+          ansible_python_interpreter: /usr/bin/python3
+%{ endfor ~}
+    worker:
+      hosts:
+%{for vm in workers~}
+        ${vm.name}:
+          ansible_user: ${vm.user}
+          ansible_host: ${vm.ipaddress}
+          ansible_python_interpreter: /usr/bin/python3
+%{endfor~}

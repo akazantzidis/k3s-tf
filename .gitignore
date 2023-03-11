@@ -1,0 +1,54 @@
+# Editors
+*.vscode/*
+
+# Trash
+.DS_Store
+Thumbs.db
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# Ignore override files as they are usually used to override resources locally and so
+# are not checked in
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
+ *tfplan*
+
+ # Exclude all binaries
+*.bin
+*.jar
+*.tar
+*.zip
+*.gzip
+*.tgz
+
+*.original
+*.tmp
+*.bkp
+*.retry
+*.*~
+*.lock.hcl
+
+*pwd*
+*pass*
+*password*
+*.txt
+*.key
+*.pem
+
+# Crash log files
+crash.log
+# log files
+*.log
+
+.dccache
+.dcignore
+
