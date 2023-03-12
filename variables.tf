@@ -176,7 +176,19 @@ variable "subnet_mask" {
   }
 }
 
-variable "exec_ansible" {
+variable "config_ansible" {
   type    = bool
   default = true
+}
+
+variable "exec_harden" {
+  type        = bool
+  default     = false
+  description = "Enables security hardening of hosts by executing devsec.hardening.os hardening ansible role"
+}
+
+variable "install_k3s" {
+  type        = bool
+  default     = false
+  description = "Installs k3s cluster based on ansible-k3s role"
 }

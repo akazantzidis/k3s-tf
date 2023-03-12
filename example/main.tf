@@ -6,7 +6,7 @@ provider "proxmox" {
   pm_otp          = null
 }
 
-module "cluster-k3s" {
+module "k3s" {
   source           = "github.com/akazantzidis/k3s-tf"
   ha_control_plane = false
   masters = {
@@ -15,9 +15,9 @@ module "cluster-k3s" {
       size    = "10G"
       storage = "NVME"
     }]
-    image         = "debianSID"
-    ssh_user      = "debian"
-    user_password = "debian"
+    image         = "ubuntu2104"
+    ssh_user      = "ubuntu"
+    user_password = "ubuntu"
     ssh_keys      = ""
     subnet        = "192.168.100.0/24"
     subnet_mask   = "24"
@@ -32,9 +32,9 @@ module "cluster-k3s" {
       size    = "10G"
       storage = "NVME"
     }]
-    image         = "debianSID"
-    ssh_user      = "debian"
-    user_password = "debian"
+    image         = "ubuntu2104"
+    ssh_user      = "ubuntu"
+    user_password = "ubuntu"
     ssh_keys      = ""
     subnet        = "192.168.100.0/24"
     subnet_mask   = "24"
@@ -58,16 +58,18 @@ module "cluster-k3s" {
     #      gw            = "192.168.110.1"
     #  }
   ]
-  proxmox_nodes = ["proxmox1"]
-  exec_ansible  = false
+  proxmox_nodes  = ["proxmox"]
+  config_ansible = true
+  exec_harden    = true
+  install_k3s    = false
 }
 
 output "masters" {
-  value = module.cluster-k3s.masters
+  value = module.k3s.masters
 }
 
 output "workers" {
-  value = module.cluster-k3s.workers
+  value = module.k3s.workers
 }
 
 terraform {

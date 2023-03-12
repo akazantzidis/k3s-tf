@@ -14,6 +14,7 @@
 | <a name="provider_null"></a> [null](#provider\_null) | 3.2.1 |
 | <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | 2.9.13 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.4.3 |
+| <a name="provider_time"></a> [time](#provider\_time) | 0.9.1 |
 
 ## Modules
 
@@ -27,17 +28,22 @@ No modules.
 | [local_file.ansible_roles_folder](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.generate_ansible_cfg](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.generate_install_playbook](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
+| [local_file.harden_role_create](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.inventory](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.kubernetes_k3s](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.kubernetes_k3s_masters](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.kubernetes_k3s_workers](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
+| [null_resource.end_hardening](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [null_resource.host_harden](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [null_resource.install_ansible_galaxy_requirements](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [null_resource.install_k3s_cluster](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
-| [null_resource.sleep_pre_ansible](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [null_resource.start](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [null_resource.start_hardening](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [proxmox_vm_qemu.master](https://registry.terraform.io/providers/telmate/proxmox/latest/docs/resources/vm_qemu) | resource |
 | [proxmox_vm_qemu.worker](https://registry.terraform.io/providers/telmate/proxmox/latest/docs/resources/vm_qemu) | resource |
 | [random_shuffle.random_node](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/shuffle) | resource |
+| [time_sleep.sleep_pre_ansible](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
+| [time_sleep.sleep_pre_harden](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 
 ## Inputs
 
@@ -48,9 +54,11 @@ No modules.
 | <a name="input_cloudinit_search_domain"></a> [cloudinit\_search\_domain](#input\_cloudinit\_search\_domain) | n/a | `string` | `null` | no |
 | <a name="input_cloudinit_sshkeys"></a> [cloudinit\_sshkeys](#input\_cloudinit\_sshkeys) | n/a | `string` | `""` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | n/a | `string` | `"default-cluster"` | no |
-| <a name="input_exec_ansible"></a> [exec\_ansible](#input\_exec\_ansible) | n/a | `bool` | `true` | no |
+| <a name="input_config_ansible"></a> [config\_ansible](#input\_config\_ansible) | n/a | `bool` | `true` | no |
+| <a name="input_exec_harden"></a> [exec\_harden](#input\_exec\_harden) | Enables security hardening of hosts by executing devsec.hardening.os hardening ansible role | `bool` | `false` | no |
 | <a name="input_gw"></a> [gw](#input\_gw) | n/a | `string` | `"192.168.1.1"` | no |
 | <a name="input_ha_control_plane"></a> [ha\_control\_plane](#input\_ha\_control\_plane) | n/a | `bool` | `false` | no |
+| <a name="input_install_k3s"></a> [install\_k3s](#input\_install\_k3s) | Installs k3s cluster based on ansible-k3s role | `bool` | `false` | no |
 | <a name="input_masters"></a> [masters](#input\_masters) | n/a | <pre>object({<br>    name      = optional(string, "control")<br>    node      = optional(string, "")<br>    pool      = optional(string, null)<br>    cores     = optional(number, 1)<br>    memory    = optional(number, 2048)<br>    bridge    = optional(string, "vmbr0")<br>    tag       = optional(number, -1)<br>    tags      = optional(list(string), ["terraform-managed-master"])<br>    ipconfig0 = optional(string, "")<br>    scsihw    = optional(string, "virtio-scsi-pci")<br>    disks = optional(list(object({<br>      id      = optional(number, 0)<br>      size    = optional(string, "10G")<br>      storage = optional(string, "local-lvm")<br>      type    = optional(string, "virtio")<br>      discard = optional(string, null)<br>      ssd = optional(number, 0) })), [<br>      {<br>        id   = 0<br>        size = "10G"<br>    }])<br>    image         = string<br>    ssh_user      = string<br>    user_password = string<br>    ssh_keys      = string<br>    subnet        = string<br>    subnet_mask   = string<br>    gw            = string<br>  })</pre> | n/a | yes |
 | <a name="input_pools"></a> [pools](#input\_pools) | n/a | <pre>list(object({<br>    name      = optional(string, "node")<br>    workers   = optional(number, 1)<br>    node      = optional(string, "")<br>    pool      = optional(string, null)<br>    cores     = optional(number, 1)<br>    memory    = optional(number, 2048)<br>    bridge    = optional(string, "vmbr0")<br>    tag       = optional(number, -1)<br>    tags      = optional(list(string), ["terraform-managed-worker"])<br>    ipconfig0 = optional(string, "")<br>    scsihw    = optional(string, "virtio-scsi-pci")<br>    disks = optional(list(object({<br>      id      = optional(number, 0)<br>      size    = optional(string, "10G")<br>      storage = optional(string, "local-lvm")<br>      type    = optional(string, "virtio")<br>      discard = optional(string, null)<br>      ssd = optional(number, 0) })),<br>      [{<br>        id   = 0<br>        size = "10G"<br>    }])<br>    image         = string<br>    ssh_user      = string<br>    user_password = string<br>    ssh_keys      = string<br>    subnet        = string<br>    subnet_mask   = string<br>    gw            = string<br>  }))</pre> | n/a | yes |
 | <a name="input_proxmox_nodes"></a> [proxmox\_nodes](#input\_proxmox\_nodes) | n/a | `list(string)` | n/a | yes |

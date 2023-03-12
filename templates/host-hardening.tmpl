@@ -1,0 +1,39 @@
+---
+- hosts:
+    - master
+    - worker
+  become: true
+  gather_facts: true
+  any_errors_fatal: true
+  pre_tasks:
+    - name: Pausing for 5 seconds...
+      pause:
+        seconds: 5
+  tasks:
+    - name: Harden hosts
+      include_role:
+        name: devsec.hardening.os_hardening
+      vars:
+        ufw_manage_defaults: false
+        sysctl_overwrite:
+          net.ipv4.ip_forward: 1
+          net.ipv6.conf.all.forwarding: 1
+          net.ipv4.conf.all.rp_filter: 0
+          net.ipv4.conf.default.rp_filter: 0
+          net.ipv4.conf.all.arp_ignore: 0
+          net.ipv4.conf.all.arp_announce: 0
+          net.ipv4.conf.all.accept_source_route: 0
+          net.ipv4.conf.default.accept_source_route: 0
+          net.ipv6.conf.all.accept_source_route: 0
+          net.ipv6.conf.default.accept_source_route: 0
+          net.ipv4.conf.all.send_redirects: 1
+          net.ipv4.conf.default.send_redirects: 1
+          net.ipv6.conf.all.accept_ra: 1
+          net.ipv6.conf.default.accept_ra: 1
+          net.ipv6.conf.default.router_solicitations: 1
+          net.ipv6.conf.default.accept_ra_rtr_pref: 1
+          net.ipv6.conf.default.accept_ra_pinfo: 1
+          net.ipv6.conf.default.accept_ra_defrtr: 1
+          net.ipv6.conf.default.autoconf: 1
+          net.ipv6.conf.default.dad_transmits: 1
+          net.ipv6.conf.default.max_addresses: 1
