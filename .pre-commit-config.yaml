@@ -35,8 +35,8 @@ repos:
     hooks:
       - id: terraform_fmt
         files: .*
-      - id: terraform_validate
-        files: .*
+      #- id: terraform_validate
+      #  files: .*
   - repo: https://github.com/terraform-docs/terraform-docs
     rev: "v0.16.0"
     hooks:

@@ -1,8 +1,3 @@
-resource "random_shuffle" "random_node" {
-  input        = var.proxmox_nodes
-  result_count = length(var.proxmox_nodes)
-}
-
 locals {
   start_num = var.ha_control_plane == true ? 5 : 3
   tmp_vms = flatten([for pool in var.pools : [
@@ -14,10 +9,11 @@ locals {
       memory        = pool.memory
       bridge        = pool.bridge
       tag           = pool.tag
-      tags          = pool.tags
+      tags          = join(" ", concat([for i in pool.tags : i], ["cluster-${var.cluster_name}"], ["${pool.name}-pool"], ["worker-node"]))
       subnet        = pool.subnet
       gw            = pool.gw
       ipconfig0     = pool.ipconfig0 != "dhcp" ? "ip=${cidrhost(pool.subnet, local.start_num + worker)}/${pool.subnet_mask},gw=${pool.gw}" : "dhcp"
+      scsihw        = pool.scsihw
       disks         = pool.disks
       image         = pool.image
       ssh_user      = pool.ssh_user
@@ -38,7 +34,7 @@ resource "proxmox_vm_qemu" "worker" {
   agent                  = "1"
   os_type                = "cloud-init"
   boot                   = var.vm_boot
-  tags                   = tostring(each.value.tags)
+  tags                   = each.value.tags
   oncreate               = "true"
   onboot                 = "true"
   sshkeys                = each.value.ssh_keys
@@ -53,6 +49,7 @@ resource "proxmox_vm_qemu" "worker" {
   sockets                = var.vm_sockets
   cpu                    = var.vm_cpu_type
   memory                 = each.value.memory
+  scsihw                 = each.value.scsihw
 
   vga {
     type   = "qxl"

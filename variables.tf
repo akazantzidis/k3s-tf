@@ -17,14 +17,15 @@ variable "masters" {
     memory    = optional(number, 2048)
     bridge    = optional(string, "vmbr0")
     tag       = optional(number, -1)
-    tags      = optional(string, "terraform-managed-master")
+    tags      = optional(list(string), ["terraform-managed-master"])
     ipconfig0 = optional(string, "")
+    scsihw    = optional(string, "virtio-scsi-pci")
     disks = optional(list(object({
       id      = optional(number, 0)
       size    = optional(string, "10G")
       storage = optional(string, "local-lvm")
-      type    = optional(string, "scsi")
-      discard = optional(string, "ignore")
+      type    = optional(string, "virtio")
+      discard = optional(string, null)
       ssd = optional(number, 0) })), [
       {
         id   = 0
@@ -54,14 +55,15 @@ variable "pools" {
     memory    = optional(number, 2048)
     bridge    = optional(string, "vmbr0")
     tag       = optional(number, -1)
-    tags      = optional(string, "terraform-managed-worker")
+    tags      = optional(list(string), ["terraform-managed-worker"])
     ipconfig0 = optional(string, "")
+    scsihw    = optional(string, "virtio-scsi-pci")
     disks = optional(list(object({
       id      = optional(number, 0)
       size    = optional(string, "10G")
       storage = optional(string, "local-lvm")
-      type    = optional(string, "scsi")
-      discard = optional(string, "ignore")
+      type    = optional(string, "virtio")
+      discard = optional(string, null)
       ssd = optional(number, 0) })),
       [{
         id   = 0
@@ -113,20 +115,10 @@ variable "cloudinit_cipassword" {
   default   = ""
 }
 
-# deprecated
-variable "vm_target_node" {
-  type    = string
-  default = ""
-}
-
 variable "vm_pool" {
   type    = string
   default = null
 }
-
-#variable "vm_clone_image" {
-#  type = string
-#}
 
 variable "cloudinit_search_domain" {
   type    = string
@@ -137,10 +129,6 @@ variable "cloudinit_nameserver" {
   type    = string
   default = null
 }
-
-#variable "cloudinit_ssh_user" {
-#  type = string
-#}
 
 variable "vm_cpu_type" {
   type    = string
@@ -154,7 +142,7 @@ variable "vm_sockets" {
 
 variable "vm_boot" {
   type    = string
-  default = "c"
+  default = "order=virtio0"
 }
 
 variable "subnet" {

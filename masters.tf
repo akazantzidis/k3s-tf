@@ -8,8 +8,9 @@ locals {
     memory        = var.masters.memory
     bridge        = var.masters.bridge
     tag           = var.masters.tag
-    tags          = var.masters.tags
+    tags          = join(" ", concat([for i in var.masters.tags : i], ["cluster-${var.cluster_name}"], ["control-node"]))
     ipconfig0     = var.masters.ipconfig0 != "dhcp" ? "ip=${cidrhost(var.masters.subnet, 2 + i)}/${var.masters.subnet_mask},gw=${var.masters.gw}" : "dhcp"
+    scsihw        = var.masters.scsihw
     disks         = var.masters.disks
     image         = var.masters.image
     ssh_user      = var.masters.ssh_user
@@ -28,7 +29,7 @@ resource "proxmox_vm_qemu" "master" {
   agent                  = "1"
   os_type                = "cloud-init"
   boot                   = var.vm_boot
-  tags                   = tostring(each.value.tags)
+  tags                   = each.value.tags
   oncreate               = "true"
   onboot                 = "true"
   sshkeys                = each.value.ssh_keys
@@ -43,6 +44,7 @@ resource "proxmox_vm_qemu" "master" {
   sockets                = var.vm_sockets
   cpu                    = var.vm_cpu_type
   memory                 = each.value.memory
+  scsihw                 = each.value.scsihw
 
   vga {
     type   = "qxl"
