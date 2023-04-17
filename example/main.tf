@@ -1,7 +1,7 @@
 provider "proxmox" {
   pm_tls_insecure = null
   pm_api_url      = "https://proxmox/api2/json"
-  pm_password     = "123456"
+  pm_password     = "password"
   pm_user         = "root@pam"
   pm_otp          = null
 }
@@ -15,14 +15,14 @@ module "k3s" {
       size    = "10G"
       storage = "NVME"
     }]
-    image         = "ubuntu2104"
-    ssh_user      = "ubuntu"
-    user_password = "ubuntu"
-    ssh_keys      = ""
-    subnet        = "192.168.100.0/24"
-    subnet_mask   = "24"
-    gw            = "192.168.100.1"
-    tags          = ["dev", "teamA"]
+    image              = "ubuntu2104"
+    ssh_user           = "ubuntu"
+    user_password      = "ubuntu"
+    ssh_keys           = "ssh-key-here"
+    subnet             = "192.168.100.0/24"
+    gw                 = "192.168.100.1"
+    tags               = ["dev", "teamA"]
+    master_start_index = ""
   }
   pools = [{
     name    = "default"
@@ -32,36 +32,33 @@ module "k3s" {
       size    = "10G"
       storage = "NVME"
     }]
-    image         = "ubuntu2104"
-    ssh_user      = "ubuntu"
-    user_password = "ubuntu"
-    ssh_keys      = ""
-    subnet        = "192.168.100.0/24"
-    subnet_mask   = "24"
-    gw            = "192.168.100.1"
-    tags          = ["dev", "teamA"]
+    image              = "ubuntu2104"
+    ssh_user           = "ubuntu"
+    user_password      = "ubuntu"
+    ssh_keys           = ""
+    subnet             = "192.168.100.0/24"
+    gw                 = "192.168.100.1"
+    tags               = ["dev", "teamA"]
+    worker_start_index = ""
     },
-    #    {
-    #      name    = "pool1"
-    #      workers = 1
-    #      tag     = 110
-    #      disks = [{
-    #        size    = "10G"
-    #        storage = "NVME"
-    #      }]
-    #      image         = "debianSID"
-    #      ssh_user      = "debian"
-    #      user_password = "debian"
-    #      ssh_keys      = ""
-    #      subnet        = "192.168.110.0/24"
-    #      subnet_mask   = "24"
-    #      gw            = "192.168.110.1"
-    #  }
+    {
+      name    = "pool1"
+      workers = 1
+      tag     = 110
+      disks = [{
+        size    = "10G"
+        storage = "NVME"
+      }]
+      image              = "debianSID"
+      ssh_user           = "debian"
+      user_password      = "debian"
+      ssh_keys           = ""
+      subnet             = "192.168.110.0/24"
+      gw                 = "192.168.110.1"
+      worker_start_index = ""
+    }
   ]
-  proxmox_nodes  = ["proxmox"]
-  config_ansible = true
-  exec_harden    = true
-  install_k3s    = false
+  proxmox_nodes = ["node1"]
 }
 
 output "masters" {
@@ -76,7 +73,7 @@ terraform {
   required_providers {
     proxmox = {
       source  = "telmate/proxmox"
-      version = "2.9.13"
+      version = "2.9.11"
     }
   }
 }

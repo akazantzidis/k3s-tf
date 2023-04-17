@@ -1,0 +1,9 @@
+# yamllint disable-file
+---
+node-ip: ${node-ip}
+protect-kernel-defaults: false
+kubelet-arg:
+  - "feature-gates=MixedProtocolLBService=true"
+node-label:
+  - "node.kubernetes.io/worker=true"
+snapshotter: "native"

@@ -1,0 +1,37 @@
+# yamllint disable-file
+---
+node-ip: ${node-ip}
+tls-san:
+%{ for san in sans ~}
+  - "${san}"
+%{ endfor ~}
+docker: false
+flannel-backend: ${flannel_backend}
+disable:
+%{ for item in disable ~}
+  - ${item}
+%{ endfor ~}
+disable-network-policy: ${net_pol_disable}
+disable-cloud-controller: ${cloud_contr_disable}
+disable-kube-proxy: ${kube_proxy_disable}
+secrets-encryption: ${secrets_encryption_enable}
+write-kubeconfig-mode: ${write_kube_perm}
+cluster-cidr: ${cluster_cidr}
+service-cidr: ${service_cidr}
+kubelet-arg:
+  - "feature-gates=MixedProtocolLBService=true"
+kube-controller-manager-arg:
+  - "feature-gates=MixedProtocolLBService=true"
+  - "bind-address=0.0.0.0"
+kube-proxy-arg:
+  - "feature-gates=MixedProtocolLBService=true"
+  - "metrics-bind-address=0.0.0.0"
+kube-scheduler-arg:
+  - "feature-gates=MixedProtocolLBService=true"
+  - "bind-address=0.0.0.0"
+etcd-expose-metrics: true
+kube-apiserver-arg:
+  - "feature-gates=MixedProtocolLBService=true"
+node-taint:
+  - "k3s-controlplane=true:NoExecute"
+snapshotter: "native"

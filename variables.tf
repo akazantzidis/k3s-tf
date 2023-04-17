@@ -31,13 +31,13 @@ variable "masters" {
         id   = 0
         size = "10G"
     }])
-    image         = string
-    ssh_user      = string
-    user_password = string
-    ssh_keys      = string
-    subnet        = string
-    subnet_mask   = string
-    gw            = string
+    image              = string
+    ssh_user           = string
+    user_password      = string
+    ssh_keys           = string
+    subnet             = string
+    gw                 = string
+    master_start_index = optional(string, "")
   })
 }
 
@@ -69,13 +69,13 @@ variable "pools" {
         id   = 0
         size = "10G"
     }])
-    image         = string
-    ssh_user      = string
-    user_password = string
-    ssh_keys      = string
-    subnet        = string
-    subnet_mask   = string
-    gw            = string
+    image              = string
+    ssh_user           = string
+    user_password      = string
+    ssh_keys           = string
+    subnet             = string
+    gw                 = string
+    worker_start_index = optional(string, "")
   }))
 }
 
@@ -163,32 +163,4 @@ variable "gw" {
     condition     = can(regex("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.gw))
     error_message = "Not valid gateway ip address"
   }
-}
-
-variable "subnet_mask" {
-  type    = string
-  default = "24"
-
-  validation {
-    condition = (var.subnet_mask >= 1 &&
-    var.subnet_mask <= 32)
-    error_message = "Not valid subnet mask"
-  }
-}
-
-variable "config_ansible" {
-  type    = bool
-  default = true
-}
-
-variable "exec_harden" {
-  type        = bool
-  default     = false
-  description = "Enables security hardening of hosts by executing devsec.hardening.os hardening ansible role"
-}
-
-variable "install_k3s" {
-  type        = bool
-  default     = false
-  description = "Installs k3s cluster based on ansible-k3s role"
 }
