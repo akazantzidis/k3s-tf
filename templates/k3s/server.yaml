@@ -3,13 +3,17 @@
 node-ip: ${node-ip}
 tls-san:
 %{ for san in sans ~}
+%{ if can(san) ~}
   - "${san}"
+%{ endif ~}
 %{ endfor ~}
 docker: false
 flannel-backend: ${flannel_backend}
 disable:
 %{ for item in disable ~}
-  - ${item}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
 %{ endfor ~}
 disable-network-policy: ${net_pol_disable}
 disable-cloud-controller: ${cloud_contr_disable}
@@ -19,19 +23,46 @@ write-kubeconfig-mode: ${write_kube_perm}
 cluster-cidr: ${cluster_cidr}
 service-cidr: ${service_cidr}
 kubelet-arg:
-  - "feature-gates=MixedProtocolLBService=true"
+%{ for item in master_kubelet_args ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}
 kube-controller-manager-arg:
-  - "feature-gates=MixedProtocolLBService=true"
-  - "bind-address=0.0.0.0"
+%{ for item in kube_control_manag_args ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}
 kube-proxy-arg:
-  - "feature-gates=MixedProtocolLBService=true"
-  - "metrics-bind-address=0.0.0.0"
+%{ for item in kube_proxy_args ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}
 kube-scheduler-arg:
-  - "feature-gates=MixedProtocolLBService=true"
-  - "bind-address=0.0.0.0"
+%{ for item in kube_sched_args ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}
 etcd-expose-metrics: true
 kube-apiserver-arg:
-  - "feature-gates=MixedProtocolLBService=true"
+%{ for item in kube_apiserver_args ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}
 node-taint:
-  - "k3s-controlplane=true:NoExecute"
+%{ for item in master_node_taints ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}
 snapshotter: "native"
+node-label:
+%{ for item in master_node_labels ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}

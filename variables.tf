@@ -164,3 +164,53 @@ variable "gw" {
     error_message = "Not valid gateway ip address"
   }
 }
+
+variable "master_kubelet_args" {
+  type    = list(string)
+  default = ["feature-gates=MixedProtocolLBService=true"]
+}
+
+variable "worker_kubelet_args" {
+  type    = list(string)
+  default = ["feature-gates=MixedProtocolLBService=true"]
+}
+
+variable "kube_control_manag_args" {
+  type    = list(string)
+  default = ["feature-gates=MixedProtocolLBService=true", "bind-address=0.0.0.0"]
+}
+
+variable "kube_proxy_args" {
+  type    = list(string)
+  default = ["feature-gates=MixedProtocolLBService=true", "bind-address=0.0.0.0"]
+}
+
+variable "kube_sched_args" {
+  type    = list(string)
+  default = ["feature-gates=MixedProtocolLBService=true", "bind-address=0.0.0.0"]
+}
+
+variable "kube_apiserver_args" {
+  type    = list(string)
+  default = ["feature-gates=MixedProtocolLBService=true"]
+}
+
+variable "master_node_taints" {
+  type    = list(string)
+  default = ["k3s-controlplane=true:NoExecute"]
+}
+
+variable "worker_node_taints" {
+  type    = list(string)
+  default = []
+}
+
+variable "master_node_labels" {
+  type    = list(string)
+  default = []
+}
+
+variable "worker_node_labels" {
+  type    = list(string)
+  default = ["node.kubernetes.io/worker=true"]
+}

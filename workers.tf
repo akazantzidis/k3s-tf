@@ -95,7 +95,10 @@ resource "proxmox_vm_qemu" "worker" {
   provisioner "file" {
     destination = "/tmp/config.yaml"
     content = templatefile("${path.module}/templates/k3s/agent.yaml", {
-      node-ip = self.ssh_host
+      node-ip             = self.ssh_host
+      worker_kubelet_args = var.worker_kubelet_args
+      worker_node_labels  = var.worker_node_labels
+      worker_node_taints  = var.worker_node_taints
     })
     connection {
       type        = "ssh"

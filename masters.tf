@@ -103,6 +103,13 @@ resource "proxmox_vm_qemu" "master" {
       kube_proxy_disable        = false
       secrets_encryption_enable = true
       write_kube_perm           = "600"
+      master_kubelet_args       = var.master_kubelet_args
+      kube_control_manag_args   = var.kube_control_manag_args
+      kube_proxy_args           = var.kube_proxy_args
+      kube_sched_args           = var.kube_sched_args
+      kube_apiserver_args       = var.kube_apiserver_args
+      master_node_taints        = var.master_node_taints
+      master_node_labels        = var.master_node_labels
     })
     connection {
       type        = "ssh"
