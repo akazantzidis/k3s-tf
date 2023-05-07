@@ -165,52 +165,102 @@ variable "gw" {
   }
 }
 
-variable "master_kubelet_args" {
+variable "k3s_master_kubelet_args" {
   type    = list(string)
   default = ["feature-gates=MixedProtocolLBService=true"]
 }
 
-variable "worker_kubelet_args" {
+variable "k3s_worker_kubelet_args" {
   type    = list(string)
   default = ["feature-gates=MixedProtocolLBService=true"]
 }
 
-variable "kube_control_manag_args" {
+variable "k3s_kube_control_manag_args" {
   type    = list(string)
   default = ["feature-gates=MixedProtocolLBService=true", "bind-address=0.0.0.0"]
 }
 
-variable "kube_proxy_args" {
+variable "k3s_kube_proxy_args" {
   type    = list(string)
   default = ["feature-gates=MixedProtocolLBService=true", "bind-address=0.0.0.0"]
 }
 
-variable "kube_sched_args" {
+variable "k3s_kube_sched_args" {
   type    = list(string)
   default = ["feature-gates=MixedProtocolLBService=true", "bind-address=0.0.0.0"]
 }
 
-variable "kube_apiserver_args" {
+variable "k3s_kube_apiserver_args" {
   type    = list(string)
   default = ["feature-gates=MixedProtocolLBService=true"]
 }
 
-variable "master_node_taints" {
+variable "k3s_master_node_taints" {
   type    = list(string)
-  default = ["k3s-controlplane=true:NoExecute"]
+  default = ["k3s-controlplane=true:NoExecute", "CriticalAddonsOnly=true:NoExecute"]
 }
 
-variable "worker_node_taints" {
+variable "k3s_worker_node_taints" {
   type    = list(string)
   default = []
 }
 
-variable "master_node_labels" {
+variable "k3s_master_node_labels" {
   type    = list(string)
   default = []
 }
 
-variable "worker_node_labels" {
+variable "k3s_worker_node_labels" {
   type    = list(string)
   default = ["node.kubernetes.io/worker=true"]
+}
+
+variable "k3s_network_policy_disable" {
+  type    = bool
+  default = false
+}
+
+variable "k3s_cloud_controller_disable" {
+  type    = bool
+  default = true
+}
+
+variable "k3s_kube_proxy_disable" {
+  type    = bool
+  default = false
+}
+
+variable "k3s_secrets_encryption_enable" {
+  type    = bool
+  default = true
+}
+
+variable "k3s_write_kubeconfig_mode" {
+  type    = string
+  default = "600"
+}
+
+variable "k3s_cluster_cidr" {
+  type    = string
+  default = "10.86.0.0/16"
+}
+
+variable "k3s_service_cidr" {
+  type    = string
+  default = "10.88.0.0/16"
+}
+
+variable "k3s_sans" {
+  type    = list(string)
+  default = ["k8s.local"]
+}
+
+variable "k3s_flannel_backend" {
+  type    = string
+  default = "vxlan"
+}
+
+variable "k3s_disable" {
+  type    = list(string)
+  default = ["traefik", "servicelb", "metrics-server", "local-storage"]
 }

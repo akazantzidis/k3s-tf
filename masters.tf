@@ -92,24 +92,24 @@ resource "proxmox_vm_qemu" "master" {
     destination = "/tmp/config.yaml"
     content = templatefile("${path.module}/templates/k3s/server.yaml", {
       node-ip                   = self.ssh_host
-      sans                      = ["192.168.100.2"]
-      node_taints               = ["CriticalAddonsOnly=true:NoExecute"]
-      flannel_backend           = "vxlan"
-      disable                   = ["traefik", "servicelb", "metrics-server", "local-storage"]
-      cluster_cidr              = "10.86.0.0/16"
-      service_cidr              = "10.88.0.0/16"
-      net_pol_disable           = false
-      cloud_contr_disable       = true
-      kube_proxy_disable        = false
-      secrets_encryption_enable = true
-      write_kube_perm           = "600"
-      master_kubelet_args       = var.master_kubelet_args
-      kube_control_manag_args   = var.kube_control_manag_args
-      kube_proxy_args           = var.kube_proxy_args
-      kube_sched_args           = var.kube_sched_args
-      kube_apiserver_args       = var.kube_apiserver_args
-      master_node_taints        = var.master_node_taints
-      master_node_labels        = var.master_node_labels
+      sans                      = var.k3s_sans
+      node_taints               = var.k3s_master_node_taints
+      flannel_backend           = var.k3s_flannel_backend
+      disable                   = var.k3s_disable
+      cluster_cidr              = var.k3s_cluster_cidr
+      service_cidr              = var.k3s_service_cidr
+      net_pol_disable           = var.k3s_network_policy_disable
+      cloud_contr_disable       = var.k3s_cloud_controller_disable
+      kube_proxy_disable        = var.k3s_kube_proxy_disable
+      secrets_encryption_enable = var.k3s_secrets_encryption_enable
+      write_kube_perm           = var.k3s_write_kubeconfig_mode
+      master_kubelet_args       = var.k3s_master_kubelet_args
+      kube_control_manag_args   = var.k3s_kube_control_manag_args
+      kube_proxy_args           = var.k3s_kube_proxy_args
+      kube_sched_args           = var.k3s_kube_sched_args
+      kube_apiserver_args       = var.k3s_kube_apiserver_args
+      master_node_taints        = var.k3s_master_node_taints
+      master_node_labels        = var.k3s_master_node_labels
     })
     connection {
       type        = "ssh"
