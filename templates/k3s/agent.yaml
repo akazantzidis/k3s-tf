@@ -1,7 +1,7 @@
 # yamllint disable-file
 ---
 node-ip: ${node-ip}
-protect-kernel-defaults: false
+protect-kernel-defaults: ${protect_kernel_defaults}
 kubelet-arg:
 %{ for item in worker_kubelet_args ~}
 %{ if can(item) ~}
@@ -14,7 +14,7 @@ node-label:
   - "${item}"
 %{ endif ~}
 %{ endfor ~}
-snapshotter: "native"
+snapshotter: ${snapshotter}
 node-taint:
 %{ for item in worker_node_taints ~}
 %{ if can(item) ~}

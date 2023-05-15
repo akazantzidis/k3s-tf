@@ -264,3 +264,14 @@ variable "k3s_disable" {
   type    = list(string)
   default = ["traefik", "servicelb", "metrics-server", "local-storage"]
 }
+
+variable "k3s_worker_protect_kernel_defaults" {
+  type    = bool
+  default = false
+}
+
+
+variable "k3s_worker_snapshotter" {
+  type    = string
+  default = "native"
+}
