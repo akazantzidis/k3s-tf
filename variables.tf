@@ -79,47 +79,6 @@ variable "pools" {
   }))
 }
 
-variable "sec_pm_tls_insecure" {
-  type    = bool
-  default = true
-}
-variable "sec_pm_api_url" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-variable "sec_pm_password" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-variable "sec_pm_user" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-variable "sec_pm_otp" {
-  type      = string
-  default   = null
-  sensitive = true
-}
-
-variable "cloudinit_sshkeys" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-variable "cloudinit_cipassword" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
-
-variable "vm_pool" {
-  type    = string
-  default = null
-}
-
 variable "cloudinit_search_domain" {
   type    = string
   default = null
