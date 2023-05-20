@@ -38,7 +38,9 @@ repos:
       #- id: terraform_validate
       #  files: .*
   - repo: https://github.com/terraform-docs/terraform-docs
+    # yamllint disable-line
     rev: "v0.16.0"
     hooks:
       - id: terraform-docs-go
+        # yamllint disable-line
         args: ["markdown", "table", "--output-file", "README.md", "./"]
