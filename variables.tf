@@ -1,17 +1,17 @@
 variable "ha_control_plane" {
-  description = "Set HA for K3S control plane.If HA == true then 3 master nodes are provisioned."
+  description = "Set HA for K3S control plane.If HA true then 3 master nodes are provisioned."
   type        = bool
   default     = false
 }
 
 variable "cluster_name" {
-  description = "The clusters name."
+  description = "Cluster name."
   type        = string
   default     = "default-cluster"
 }
 
 variable "masters" {
-  description = "The master node configuration options"
+  description = "Master nodes configuration options"
   type = object({
     name      = optional(string, "control")
     node      = optional(string, "")
@@ -50,7 +50,7 @@ variable "proxmox_nodes" {
 }
 
 variable "pools" {
-  description = "Worker pool configuration options"
+  description = "Worker pools configuration options"
   type = list(object({
     name      = optional(string, "node")
     workers   = optional(number, 1)
@@ -85,31 +85,31 @@ variable "pools" {
 }
 
 variable "cloudinit_search_domain" {
-  description = "VM DNS domain search"
+  description = "VM's DNS domain search"
   type        = string
   default     = null
 }
 
 variable "cloudinit_nameserver" {
-  description = "VM DNS server"
+  description = "VM's DNS server"
   type        = string
   default     = null
 }
 
 variable "vm_cpu_type" {
-  description = "VM CPU type"
+  description = "VM's CPU type"
   type        = string
   default     = "host"
 }
 
 variable "vm_sockets" {
-  description = "VM CPU sockets"
+  description = "VM's CPU sockets"
   type        = number
   default     = 1
 }
 
 variable "vm_boot" {
-  description = "VM boot device configuration"
+  description = "VM's boot device configuration"
   type        = string
   default     = "order=virtio0"
 }
@@ -136,49 +136,49 @@ variable "gw" {
 }
 
 variable "k3s_master_kubelet_args" {
-  description = "K3s master kubelet arguments"
+  description = "k3s masters kubelet arguments"
   type        = list(string)
   default     = ["feature-gates=MixedProtocolLBService=true"]
 }
 
 variable "k3s_worker_kubelet_args" {
-  description = "K3s worker kubelet arguments"
+  description = "k3s workers kubelet arguments"
   type        = list(string)
   default     = ["feature-gates=MixedProtocolLBService=true"]
 }
 
 variable "k3s_kube_control_manag_args" {
-  description = "K3s control-manager arguments"
+  description = "k3s controller-manager extra configuration"
   type        = list(string)
   default     = ["feature-gates=MixedProtocolLBService=true", "bind-address=0.0.0.0"]
 }
 
 variable "k3s_kube_proxy_args" {
-  description = "K3s kube-proxy arguments"
+  description = "k3s kube-proxy extra configuration"
   type        = list(string)
   default     = ["feature-gates=MixedProtocolLBService=true", "bind-address=0.0.0.0"]
 }
 
 variable "k3s_kube_sched_args" {
-  description = "K3s scheduler arguments"
+  description = "k3s scheduler extra configuration"
   type        = list(string)
   default     = ["feature-gates=MixedProtocolLBService=true", "bind-address=0.0.0.0"]
 }
 
 variable "k3s_kube_apiserver_args" {
-  description = "K3s api server arguments"
+  description = "k3s api server extra configuration"
   type        = list(string)
   default     = ["feature-gates=MixedProtocolLBService=true"]
 }
 
 variable "k3s_master_node_taints" {
-  description = "K3s master taints"
+  description = "k3s master taints"
   type        = list(string)
   default     = ["k3s-controlplane=true:NoExecute", "CriticalAddonsOnly=true:NoExecute"]
 }
 
 variable "k3s_worker_node_taints" {
-  description = "K3s worker taints"
+  description = "k3s worker taints"
   type        = list(string)
   default     = []
 }
@@ -190,25 +190,25 @@ variable "k3s_master_node_labels" {
 }
 
 variable "k3s_worker_node_labels" {
-  description = "K3s worker labels"
+  description = "k3s worker labels"
   type        = list(string)
   default     = ["node.kubernetes.io/worker=true"]
 }
 
 variable "k3s_network_policy_disable" {
-  description = "K3s default network policy controller configuration"
+  description = "k3s default network policy controller configuration"
   type        = bool
   default     = false
 }
 
 variable "k3s_cloud_controller_disable" {
-  description = "K3s default network cloud controller configuration"
+  description = "k3s default network cloud controller configuration"
   type        = bool
   default     = true
 }
 
 variable "k3s_kube_proxy_disable" {
-  description = "K3s default kube-proxy configuration"
+  description = "k3s default kube-proxy configuration"
   type        = bool
   default     = false
 }
@@ -226,7 +226,7 @@ variable "k3s_write_kubeconfig_mode" {
 }
 
 variable "k3s_cluster_cidr" {
-  description = "K3s cluster pod cidr configuration"
+  description = "k3s cluster pod cidr configuration"
   type        = string
   default     = "10.86.0.0/16"
 }
@@ -244,26 +244,26 @@ variable "k3s_sans" {
 }
 
 variable "k3s_flannel_backend" {
-  description = "K3s default network backend configuration"
+  description = "k3s default network backend configuration"
   type        = string
   default     = "vxlan"
 }
 
 variable "k3s_disable" {
-  description = "K3s addons disable configuration"
+  description = "k3s addons disable configuration"
   type        = list(string)
   default     = ["traefik", "servicelb", "metrics-server", "local-storage"]
 }
 
 variable "k3s_worker_protect_kernel_defaults" {
-  description = "K3s protect kernel defaults configuration"
+  description = "k3s protect kernel defaults configuration"
   type        = bool
   default     = false
 }
 
 
 variable "k3s_worker_snapshotter" {
-  description = "K3s default snapshotter configuration"
+  description = "k3s default snapshotter configuration"
   type        = string
   default     = "native"
 }
