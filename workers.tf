@@ -106,7 +106,7 @@ resource "proxmox_vm_qemu" "worker" {
       type        = "ssh"
       host        = self.ssh_host
       user        = self.ssh_user
-      private_key = file("~/.ssh/id_ed25519")
+      private_key = file(var.private_ssh_key)
     }
   }
   provisioner "remote-exec" {
@@ -119,7 +119,7 @@ resource "proxmox_vm_qemu" "worker" {
       type        = "ssh"
       host        = self.ssh_host
       user        = self.ssh_user
-      private_key = file("~/.ssh/id_ed25519")
+      private_key = file(var.private_ssh_key)
     }
   }
 

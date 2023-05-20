@@ -119,6 +119,7 @@ resource "proxmox_vm_qemu" "master" {
     }
   }
   provisioner "remote-exec" {
+    # Check if is running on first master,IF YES then init's the first master,else does exit without error.
     inline = [
       "if ip a | grep inet | awk '{print $2}' | grep -w ${cidrhost(var.masters.subnet, local.start_ip_master)};then : ;else exit 0;fi",
       "sudo mkdir -p /etc/rancher/k3s",
@@ -129,10 +130,11 @@ resource "proxmox_vm_qemu" "master" {
       type        = "ssh"
       host        = self.ssh_host
       user        = self.ssh_user
-      private_key = file("~/.ssh/id_ed25519")
+      private_key = file(var.private_ssh_key)
     }
   }
   provisioner "remote-exec" {
+    # Checks if is running in the not first master , IF YES it joins the N master to the first master, else exits without error
     inline = [
       "if ip a | grep inet | awk '{print $2}' | grep -w ${cidrhost(var.masters.subnet, local.start_ip_master)};then exit 0;fi",
       "sleep 30",
@@ -145,7 +147,7 @@ resource "proxmox_vm_qemu" "master" {
       type        = "ssh"
       host        = self.ssh_host
       user        = self.ssh_user
-      private_key = file("~/.ssh/id_ed25519")
+      private_key = file(var.private_ssh_key)
     }
   }
   lifecycle {
