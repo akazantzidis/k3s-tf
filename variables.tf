@@ -235,7 +235,8 @@ variable "k3s_worker_snapshotter" {
   default = "native"
 }
 
-variable "private_ssh_key" {}
-type        = string
-description = "The path is stored the private ssh key which matches the ssh authorized keys which were set"
-default     = "~/.ssh/id_ed25519"
+variable "private_ssh_key" {
+  type        = string
+  description = "The path is stored the private ssh key which matches the ssh authorized keys which were set"
+  default     = "~/.ssh/id_ed25519"
+}
