@@ -51,6 +51,7 @@ No modules.
 | <a name="input_k3s_sans"></a> [k3s\_sans](#input\_k3s\_sans) | K3s default certificate included entries configuration | `list(string)` | <pre>[<br>  "k8s.local"<br>]</pre> | no |
 | <a name="input_k3s_secrets_encryption_enable"></a> [k3s\_secrets\_encryption\_enable](#input\_k3s\_secrets\_encryption\_enable) | K3s default secrets encryption configuration | `bool` | `true` | no |
 | <a name="input_k3s_service_cidr"></a> [k3s\_service\_cidr](#input\_k3s\_service\_cidr) | K3s cluster service cidr configuration | `string` | `"10.88.0.0/16"` | no |
+| <a name="input_k3s_version"></a> [k3s\_version](#input\_k3s\_version) | The k3s version to be installed.Eg. vX.Y.Z-rc1 | `string` | `""` | no |
 | <a name="input_k3s_worker_kubelet_args"></a> [k3s\_worker\_kubelet\_args](#input\_k3s\_worker\_kubelet\_args) | k3s workers kubelet arguments | `list(string)` | <pre>[<br>  "feature-gates=MixedProtocolLBService=true"<br>]</pre> | no |
 | <a name="input_k3s_worker_node_labels"></a> [k3s\_worker\_node\_labels](#input\_k3s\_worker\_node\_labels) | k3s worker labels | `list(string)` | <pre>[<br>  "node.kubernetes.io/worker=true"<br>]</pre> | no |
 | <a name="input_k3s_worker_node_taints"></a> [k3s\_worker\_node\_taints](#input\_k3s\_worker\_node\_taints) | k3s worker taints | `list(string)` | `[]` | no |

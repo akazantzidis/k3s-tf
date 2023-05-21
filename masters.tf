@@ -6,6 +6,7 @@ resource "random_password" "k3s-token" {
 }
 
 locals {
+  k3ver           = var.k3s_version == "" ? "INSTALL_K3S_CHANNEL=stable" : "INSTALL_K3S_VERSION=${var.k3s_version}"
   masters_count   = var.ha_control_plane == false ? 1 : 3
   start_ip_master = var.masters.master_start_index != "" ? var.masters.master_start_index : (cidrhost(var.masters.subnet, 1) == var.masters.gw ? element(split(".", cidrhost(var.masters.subnet, 1)), 3) + 1 : element(split(".", cidrhost(var.masters.subnet, 1)), 3))
   local_masters = { for i, v in range(local.masters_count) : v => {
@@ -124,7 +125,7 @@ resource "proxmox_vm_qemu" "master" {
       "if ip a | grep inet | awk '{print $2}' | grep -w ${cidrhost(var.masters.subnet, local.start_ip_master)};then : ;else exit 0;fi",
       "sudo mkdir -p /etc/rancher/k3s",
       "sudo mv /tmp/config.yaml /etc/rancher/k3s/config.yaml",
-      "curl -sfL https://get.k3s.io | sudo sh -s - server --cluster-init --token ${random_password.k3s-token.result}"
+      "curl -sfL https://get.k3s.io | sudo ${local.k3ver} sh -s - server --cluster-init --token ${random_password.k3s-token.result}"
     ]
     connection {
       type        = "ssh"
@@ -140,7 +141,7 @@ resource "proxmox_vm_qemu" "master" {
       "sleep 30",
       "sudo mkdir -p /etc/rancher/k3s",
       "sudo mv /tmp/config.yaml /etc/rancher/k3s/config.yaml",
-      "curl -sfL https://get.k3s.io | sudo sh -s - server --server https://${cidrhost(var.masters.subnet, local.start_ip_master)}:6443 --token ${random_password.k3s-token.result}",
+      "curl -sfL https://get.k3s.io | sudo ${local.k3ver} sh -s - server --server https://${cidrhost(var.masters.subnet, local.start_ip_master)}:6443 --token ${random_password.k3s-token.result}",
       "sleep 5"
     ]
     connection {

@@ -9,6 +9,7 @@ provider "proxmox" {
 module "k3s" {
   source           = "github.com/akazantzidis/k3s-tf"
   ha_control_plane = false
+  #k3s_version = ""
   masters = {
     tag = 100
     disks = [{

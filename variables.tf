@@ -273,3 +273,9 @@ variable "private_ssh_key" {
   description = "The path is stored the private ssh key which matches the ssh authorized keys which were set"
   default     = "~/.ssh/id_ed25519"
 }
+
+variable "k3s_version" {
+  type        = string
+  description = "The k3s version to be installed.Eg. vX.Y.Z-rc1"
+  default     = ""
+}
