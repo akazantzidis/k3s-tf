@@ -120,7 +120,7 @@ resource "proxmox_vm_qemu" "master" {
     }
   }
   provisioner "remote-exec" {
-    # Check if is running on first master,IF YES then init's the first master,else does exit without error.
+    # Checks if it is running on first master,if true then init's the first master,else does exit without error.
     inline = [
       "if ip a | grep inet | awk '{print $2}' | grep -w ${cidrhost(var.masters.subnet, local.start_ip_master)};then : ;else exit 0;fi",
       "sudo mkdir -p /etc/rancher/k3s",
@@ -135,7 +135,7 @@ resource "proxmox_vm_qemu" "master" {
     }
   }
   provisioner "remote-exec" {
-    # Checks if is running in the not first master , IF YES it joins the N master to the first master, else exits without error
+    # Checks if it is running in a non-first master,if true joins itself to the first master, else exits without error
     inline = [
       "if ip a | grep inet | awk '{print $2}' | grep -w ${cidrhost(var.masters.subnet, local.start_ip_master)};then exit 0;fi",
       "sleep 30",
