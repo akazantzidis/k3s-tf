@@ -192,7 +192,7 @@ variable "k3s_master_node_labels" {
 variable "k3s_worker_node_labels" {
   description = "k3s worker labels"
   type        = list(string)
-  default     = ["node.kubernetes.io/worker=true"]
+  default     = []
 }
 
 variable "k3s_network_policy_disable" {
@@ -222,7 +222,7 @@ variable "k3s_secrets_encryption_enable" {
 variable "k3s_write_kubeconfig_mode" {
   description = "K3s default kube-config configuration"
   type        = string
-  default     = "600"
+  default     = "640"
 }
 
 variable "k3s_cluster_cidr" {
@@ -240,7 +240,7 @@ variable "k3s_service_cidr" {
 variable "k3s_sans" {
   description = "K3s default certificate included entries configuration"
   type        = list(string)
-  default     = ["k8s.local"]
+  default     = null
 }
 
 variable "k3s_flannel_backend" {
@@ -262,7 +262,7 @@ variable "k3s_worker_protect_kernel_defaults" {
 }
 
 
-variable "k3s_worker_snapshotter" {
+variable "k3s_snapshotter" {
   description = "k3s default snapshotter configuration"
   type        = string
   default     = "native"
@@ -277,5 +277,29 @@ variable "private_ssh_key" {
 variable "k3s_version" {
   type        = string
   description = "The k3s version to be installed.Eg. vX.Y.Z-rc1"
+  default     = ""
+}
+
+variable "cilium" {
+  type        = bool
+  description = "Install Cillium cni"
+  default     = false
+}
+
+variable "cilium_version" {
+  type        = string
+  description = "Cillium version to install.Example 1.13.2"
+  default     = ""
+}
+
+variable "cilium_helm_flags" {
+  type        = string
+  description = "Cillium helm arguments delimited with ','.Example key1=value,key2=value"
+  default     = "k8sServicePort=6443,ipam.mode=kubernetes,operator.replicas=1"
+}
+
+variable "api_vip" {
+  type        = string
+  description = "VIP address/domain for k8s api.Can be an existing infrastructure loadbalancer."
   default     = ""
 }

@@ -100,7 +100,7 @@ resource "proxmox_vm_qemu" "worker" {
       worker_node_labels      = var.k3s_worker_node_labels
       worker_node_taints      = var.k3s_worker_node_taints
       protect_kernel_defaults = var.k3s_worker_protect_kernel_defaults
-      snapshotter             = var.k3s_worker_snapshotter
+      snapshotter             = var.k3s_snapshotter
     })
     connection {
       type        = "ssh"
@@ -113,7 +113,7 @@ resource "proxmox_vm_qemu" "worker" {
     inline = [
       "sudo mkdir -p /etc/rancher/k3s",
       "sudo mv /tmp/config.yaml /etc/rancher/k3s/config.yaml",
-      "curl -sfL https://get.k3s.io | sudo ${local.k3ver} sh -s - agent --server https://${cidrhost(var.masters.subnet, local.start_ip_master)}:6443  --token ${random_password.k3s-token.result}"
+      "curl -sfL https://get.k3s.io | ${local.k3ver} sudo -s sh -s - agent --server https://${local.vip}:6443 --token ${random_password.k3s-token.result}"
     ]
     connection {
       type        = "ssh"
