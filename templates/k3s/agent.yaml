@@ -1,0 +1,29 @@
+# yamllint disable-file
+---
+node-ip: ${node-ip}
+protect-kernel-defaults: ${protect_kernel_defaults}
+%{ if length(worker_kubelet_args) > 0 ~}
+kubelet-arg:
+%{ for item in worker_kubelet_args ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}
+%{ endif ~}
+%{ if length(worker_node_labels) > 0 ~}
+node-label:
+%{ for item in worker_node_labels ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}
+%{ endif ~}
+snapshotter: ${snapshotter}
+%{ if length(worker_node_taints) > 0 ~}
+node-taint:
+%{ for item in worker_node_taints ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}
+%{ endif ~}

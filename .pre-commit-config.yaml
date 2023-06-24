@@ -34,12 +34,13 @@ repos:
     rev: v1.77.1
     hooks:
       - id: terraform_fmt
-        files: .*
+        files: .*.tf
       #- id: terraform_validate
       #  files: .*
-  #- repo: https://github.com/terraform-docs/terraform-docs
-  #  rev: "v0.16.0"
-  #  hooks:
-  #    - id: terraform-docs-go
-  #      args: ["markdown", "table", "--output-file", "README.md", "./"]
-#
+  - repo: https://github.com/terraform-docs/terraform-docs
+    # yamllint disable-line
+    rev: "v0.16.0"
+    hooks:
+      - id: terraform-docs-go
+        # yamllint disable-line
+        args: ["markdown", "table", "--output-file", "README.md", "./"]

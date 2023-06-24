@@ -1,18 +1,24 @@
 locals {
-  start_num = var.ha_control_plane == true ? 5 : 3
-  tmp_vms = flatten([for pool in var.pools : [
+  get_last_master_ip = element(split("/", element(split(",", element(
+  split(".", element([for vm in proxmox_vm_qemu.master : vm.ipconfig0], length([for vm in proxmox_vm_qemu.master : vm.ipconfig0]) - 1)), 3)), 0)), 0)
+  local_workers = flatten([for pool in var.pools : [
     for worker in range(pool.workers) : {
-      name          = "${var.cluster_name}-${pool.name}-node-${worker}"
-      node          = pool.node != "" ? pool.node : random_shuffle.random_node.result[0]
-      pool          = pool.pool
-      cores         = pool.cores
-      memory        = pool.memory
-      bridge        = pool.bridge
-      tag           = pool.tag
-      tags          = join(" ", concat([for i in pool.tags : i], ["cluster-${var.cluster_name}"], ["${pool.name}-pool"], ["worker-node"]))
-      subnet        = pool.subnet
-      gw            = pool.gw
-      ipconfig0     = pool.ipconfig0 != "dhcp" ? "ip=${cidrhost(pool.subnet, local.start_num + worker)}/${pool.subnet_mask},gw=${pool.gw}" : "dhcp"
+      name   = "${var.cluster_name}-${pool.name}-worker-node-${worker}"
+      node   = pool.node != "" ? pool.node : random_shuffle.random_node.result[0]
+      pool   = pool.pool
+      cores  = pool.cores
+      memory = pool.memory
+      bridge = pool.bridge
+      tag    = pool.tag
+      tags   = join(" ", concat([for i in pool.tags : i], ["cluster-${var.cluster_name}"], ["${pool.name}-pool"], ["worker-node"]))
+      subnet = pool.subnet
+      gw     = pool.gw
+      # The below is ugly but seem to work :o !!
+      ipconfig0 = pool.ipconfig0 != "dhcp" ? "ip=${cidrhost(pool.subnet, (pool.worker_start_index != "" ? pool.worker_start_index + worker :
+        ((pool.subnet == var.masters.subnet) ? (local.get_last_master_ip + 1) + worker :
+          ((element(split(".", pool.gw), 3) <= 253) ? (element(split(".", pool.gw), 3) + 1) + worker :
+        1 + worker))))
+      }/${element(split("/", pool.subnet), 1)},gw=${pool.gw}" : "dhcp"
       scsihw        = pool.scsihw
       disks         = pool.disks
       image         = pool.image
@@ -26,7 +32,7 @@ locals {
 }
 
 resource "proxmox_vm_qemu" "worker" {
-  for_each               = { for k, v in local.tmp_vms : k => v }
+  for_each               = { for key, value in local.local_workers : value.name => value }
   name                   = each.value.name
   desc                   = "k3s worker node - Terraform managed"
   define_connection_info = "true"
@@ -84,7 +90,37 @@ resource "proxmox_vm_qemu" "worker" {
     type = "ssh"
     host = self.ssh_host
     user = self.ssh_user
-    port = self.ssh_port
+  }
+
+  provisioner "file" {
+    destination = "/tmp/config.yaml"
+    content = templatefile("${path.module}/templates/k3s/agent.yaml", {
+      node-ip                 = self.ssh_host
+      worker_kubelet_args     = var.k3s_worker_kubelet_args
+      worker_node_labels      = var.k3s_worker_node_labels
+      worker_node_taints      = var.k3s_worker_node_taints
+      protect_kernel_defaults = var.k3s_worker_protect_kernel_defaults
+      snapshotter             = var.k3s_snapshotter
+    })
+    connection {
+      type        = "ssh"
+      host        = self.ssh_host
+      user        = self.ssh_user
+      private_key = file(var.private_ssh_key)
+    }
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "sudo mkdir -p /etc/rancher/k3s",
+      "sudo mv /tmp/config.yaml /etc/rancher/k3s/config.yaml",
+      "curl -sfL https://get.k3s.io | ${local.k3ver} sudo -s sh -s - agent --server https://${local.vip}:6443 --token ${random_password.k3s-token.result}"
+    ]
+    connection {
+      type        = "ssh"
+      host        = self.ssh_host
+      user        = self.ssh_user
+      private_key = file(var.private_ssh_key)
+    }
   }
 
   lifecycle {
@@ -92,11 +128,14 @@ resource "proxmox_vm_qemu" "worker" {
       disk,
       network,
       serial,
-      vga
+      vga,
+      tags,
+      qemu_os,
+      ciuser
     ]
   }
 
   depends_on = [
-    random_shuffle.random_node
+    random_shuffle.random_node,
   ]
 }

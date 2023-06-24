@@ -1,0 +1,85 @@
+# yamllint disable-file
+node-ip: ${node-ip}
+%{ if length(sans) > 0 ~}
+tls-san:
+%{ for san in sans ~}
+%{ if can(san) ~}
+  - "${san}"
+%{ endif ~}
+%{ endfor ~}
+%{ endif ~}
+docker: false
+flannel-backend: ${flannel_backend}
+%{ if length(disable) > 0 ~}
+disable:
+%{ for item in disable ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}
+%{ endif ~}
+disable-network-policy: ${net_pol_disable}
+disable-cloud-controller: ${cloud_contr_disable}
+disable-kube-proxy: ${kube_proxy_disable}
+secrets-encryption: ${secrets_encryption_enable}
+write-kubeconfig-mode: ${write_kube_perm}
+cluster-cidr: ${cluster_cidr}
+service-cidr: ${service_cidr}
+%{ if length(master_kubelet_args) > 0 ~}
+kubelet-arg:
+%{ for item in master_kubelet_args ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}
+%{ endif ~}
+%{ if length(kube_control_manag_args) > 0 ~}
+kube-controller-manager-arg:
+%{ for item in kube_control_manag_args ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}
+%{ endif ~}
+%{ if length(kube_proxy_args) > 0 ~}
+kube-proxy-arg:
+%{ for item in kube_proxy_args ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}
+%{ endif ~}
+%{ if length(kube_sched_args) > 0 ~}
+kube-scheduler-arg:
+%{ for item in kube_sched_args ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}
+%{ endif ~}
+etcd-expose-metrics: true
+%{ if length(kube_apiserver_args) > 0 ~}
+kube-apiserver-arg:
+%{ for item in kube_apiserver_args ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}
+%{ endif ~}
+%{ if length(master_node_taints) > 0 ~}
+node-taint:
+%{ for item in master_node_taints ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}
+%{ endif ~}
+snapshotter: ${snapshotter}
+%{ if length(master_node_labels) > 0 ~}
+node-label:
+%{ for item in master_node_labels ~}
+%{ if can(item) ~}
+  - "${item}"
+%{ endif ~}
+%{ endfor ~}
+%{ endif ~}
