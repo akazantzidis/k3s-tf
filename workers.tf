@@ -1,9 +1,9 @@
 locals {
   get_last_master_ip = element(split("/", element(split(",", element(
   split(".", element([for vm in proxmox_vm_qemu.master : vm.ipconfig0], length([for vm in proxmox_vm_qemu.master : vm.ipconfig0]) - 1)), 3)), 0)), 0)
-  tmp_vms = flatten([for pool in var.pools : [
+  local_workers = flatten([for pool in var.pools : [
     for worker in range(pool.workers) : {
-      name   = "${var.cluster_name}-${pool.name}-node-${worker}"
+      name   = "${var.cluster_name}-${pool.name}-worker-node-${worker}"
       node   = pool.node != "" ? pool.node : random_shuffle.random_node.result[0]
       pool   = pool.pool
       cores  = pool.cores
@@ -13,7 +13,7 @@ locals {
       tags   = join(" ", concat([for i in pool.tags : i], ["cluster-${var.cluster_name}"], ["${pool.name}-pool"], ["worker-node"]))
       subnet = pool.subnet
       gw     = pool.gw
-      # The below is fucking ugly but works as expected. :o !!
+      # The below is ugly but seem to work :o !!
       ipconfig0 = pool.ipconfig0 != "dhcp" ? "ip=${cidrhost(pool.subnet, (pool.worker_start_index != "" ? pool.worker_start_index + worker :
         ((pool.subnet == var.masters.subnet) ? (local.get_last_master_ip + 1) + worker :
           ((element(split(".", pool.gw), 3) <= 253) ? (element(split(".", pool.gw), 3) + 1) + worker :
@@ -32,7 +32,7 @@ locals {
 }
 
 resource "proxmox_vm_qemu" "worker" {
-  for_each               = { for k, v in local.tmp_vms : k => v }
+  for_each               = { for key, value in local.local_workers : value.name => value }
   name                   = each.value.name
   desc                   = "k3s worker node - Terraform managed"
   define_connection_info = "true"
@@ -130,7 +130,8 @@ resource "proxmox_vm_qemu" "worker" {
       serial,
       vga,
       tags,
-      qemu_os
+      qemu_os,
+      ciuser
     ]
   }
 

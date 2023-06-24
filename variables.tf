@@ -7,13 +7,12 @@ variable "ha_control_plane" {
 variable "cluster_name" {
   description = "Cluster name."
   type        = string
-  default     = "default-cluster"
+  default     = "test-cluster"
 }
 
 variable "masters" {
   description = "Master nodes configuration options"
   type = object({
-    name      = optional(string, "control")
     node      = optional(string, "")
     pool      = optional(string, null)
     cores     = optional(number, 1)
@@ -52,7 +51,7 @@ variable "proxmox_nodes" {
 variable "pools" {
   description = "Worker pools configuration options"
   type = list(object({
-    name      = optional(string, "node")
+    name      = string
     workers   = optional(number, 1)
     node      = optional(string, "")
     pool      = optional(string, null)
@@ -252,7 +251,7 @@ variable "k3s_flannel_backend" {
 variable "k3s_disable" {
   description = "k3s addons disable configuration"
   type        = list(string)
-  default     = ["traefik", "servicelb", "metrics-server", "local-storage"]
+  default     = ["traefik", "servicelb", "local-storage"] #"metrics-server",
 }
 
 variable "k3s_worker_protect_kernel_defaults" {
@@ -300,6 +299,16 @@ variable "cilium_helm_flags" {
 
 variable "api_vip" {
   type        = string
-  description = "VIP address/domain for k8s api.Can be an existing infrastructure loadbalancer."
+  description = "VIP ip address for k8s api.Can be an existing infrastructure loadbalancer."
   default     = ""
+}
+
+variable "kube_vip_enable" {
+  type    = bool
+  default = false
+}
+
+variable "kube_vip_dev" {
+  type    = string
+  default = "eth0"
 }

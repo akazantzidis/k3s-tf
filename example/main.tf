@@ -9,14 +9,14 @@ provider "proxmox" {
 module "k3s" {
   source           = "github.com/akazantzidis/k3s-tf"
   ha_control_plane = false
-  #k3s_version = ""
+  k3s_version      = ""
   masters = {
     tag = 100
     disks = [{
       size    = "10G"
       storage = "NVME"
     }]
-    image              = "ubuntu2104"
+    image              = "ubuntu2204"
     ssh_user           = "ubuntu"
     user_password      = "ubuntu"
     ssh_keys           = "ssh-key-here"
@@ -26,14 +26,14 @@ module "k3s" {
     master_start_index = ""
   }
   pools = [{
-    name    = "default"
+    name    = "pool0"
     workers = 1
     tag     = 100
     disks = [{
       size    = "10G"
       storage = "NVME"
     }]
-    image              = "ubuntu2104"
+    image              = "ubuntu2204"
     ssh_user           = "ubuntu"
     user_password      = "ubuntu"
     ssh_keys           = ""
@@ -59,7 +59,12 @@ module "k3s" {
       worker_start_index = ""
     }
   ]
-  proxmox_nodes = ["node1"]
+  proxmox_nodes       = ["node1"]
+  k3s_sans            = ["api.192.168.100.19.nip.io", "192.168.100.19", "api.192.168.100.20.nip.io", "192.168.100.20"]
+  api_vip             = "192.168.100.19"
+  cilium              = false
+  k3s_flannel_backend = "wireguard-native"
+  kube_vip_enable     = false
 }
 
 output "masters" {
@@ -74,7 +79,7 @@ terraform {
   required_providers {
     proxmox = {
       source  = "telmate/proxmox"
-      version = "2.9.11"
+      version = "2.9.14"
     }
   }
 }

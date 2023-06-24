@@ -12,7 +12,7 @@ locals {
   masters_count   = var.ha_control_plane == false ? 1 : 3
   start_ip_master = var.masters.master_start_index != "" ? var.masters.master_start_index : (cidrhost(var.masters.subnet, 1) == var.masters.gw ? element(split(".", cidrhost(var.masters.subnet, 1)), 3) + 1 : element(split(".", cidrhost(var.masters.subnet, 1)), 3))
   local_masters = { for i, v in range(local.masters_count) : v => {
-    name          = "${var.cluster_name}-${var.masters.name}-node-${i}"
+    name          = "${var.cluster_name}-control-node-${i}"
     node          = var.masters.node != "" ? var.masters.node : random_shuffle.random_node.result[0]
     pool          = var.masters.pool
     cores         = var.masters.cores
@@ -92,11 +92,12 @@ resource "proxmox_vm_qemu" "master" {
     host = self.ssh_host
     user = self.ssh_user
   }
+
   provisioner "file" {
     destination = "/tmp/config.yaml"
     content = templatefile("${path.module}/templates/k3s/server.yaml", {
       node-ip                   = self.ssh_host
-      sans                      = var.k3s_sans == null ? ["${local.vip}"] : concat(var.k3s_sans, ["${local.vip}"])
+      sans                      = var.k3s_sans == null ? ["${local.vip}"] : distinct(concat(var.k3s_sans, ["${local.vip}"]))
       node_taints               = var.k3s_master_node_taints
       flannel_backend           = var.cilium == true ? "none" : var.k3s_flannel_backend
       disable                   = var.k3s_disable
@@ -123,6 +124,21 @@ resource "proxmox_vm_qemu" "master" {
       private_key = file(var.private_ssh_key)
     }
   }
+
+  provisioner "file" {
+    destination = "/tmp/kube-vip.yaml"
+    content = templatefile("${path.module}/templates/k3s/kube-vip.yaml", {
+      vip = var.api_vip
+      dev = var.kube_vip_dev
+    })
+    connection {
+      type        = "ssh"
+      host        = self.ssh_host
+      user        = self.ssh_user
+      private_key = file(var.private_ssh_key)
+    }
+  }
+
   provisioner "remote-exec" {
     # Checks if it is running on first master,if true then init's the first master,else does exit without error.
     inline = [
@@ -131,6 +147,7 @@ resource "proxmox_vm_qemu" "master" {
       "sudo mv /tmp/config.yaml /etc/rancher/k3s/config.yaml",
       "curl -sfL https://get.k3s.io | sudo ${local.k3ver} sh -s - server --cluster-init --token ${random_password.k3s-token.result}",
       "mkdir /home/$${USER}/.kube/ && sudo cp /etc/rancher/k3s/k3s.yaml /home/$${USER}/.kube/config && sudo chown $${USER} /home/$${USER}/.kube/config",
+      "if ${var.kube_vip_enable} == true;then sudo mkdir -p /var/lib/rancher/k3s/server/manifests/ && sudo cp /tmp/kube-vip.yaml /var/lib/rancher/k3s/server/manifests/kube-vip.yaml;else rm /tmp/kube-vip.yaml ;fi",
       "if ${var.cilium} == true;then : ;else exit 0;fi",
       "curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | sudo bash && helm repo add cilium https://helm.cilium.io/",
       "helm install cilium cilium/cilium --namespace kube-system ${local.cil_vers} --set k8sServiceHost=${local.vip},ipam.operator.clusterPoolIPv4PodCIDRList=[\"${var.k3s_cluster_cidr}\"] ${local.helm_flags}",
@@ -151,6 +168,7 @@ resource "proxmox_vm_qemu" "master" {
       "sleep $((RANDOM % 30))",
       "sudo mkdir -p /etc/rancher/k3s",
       "sudo mv /tmp/config.yaml /etc/rancher/k3s/config.yaml",
+      "if ${var.kube_vip_enable} == true;then sudo mkdir -p /var/lib/rancher/k3s/server/manifests && sudo cp /tmp/kube-vip.yaml /var/lib/rancher/k3s/server/manifests/kube-vip.yaml;else rm /tmp/kube-vip.yaml ;fi",
       "curl -sfL https://get.k3s.io | sudo ${local.k3ver} sh -s - server --server https://${local.vip}:6443 --token ${random_password.k3s-token.result}",
       "sleep 5"
     ]
@@ -168,7 +186,8 @@ resource "proxmox_vm_qemu" "master" {
       serial,
       vga,
       tags,
-      qemu_os
+      qemu_os,
+      ciuser
     ]
   }
 
