@@ -1,5 +1,9 @@
 <!-- BEGIN_TF_DOCS -->
+<<<<<<< HEAD
 ## Requirements
+=======
+## The current module will be migrated to another proxmox terraform provider for more stability and features.
+>>>>>>> master
 
 | Name | Version |
 |------|---------|
