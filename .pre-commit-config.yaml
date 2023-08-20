@@ -16,7 +16,7 @@ repos:
       - id: end-of-file-fixer
       - id: mixed-line-ending
   - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.1
+    rev: v1.5.4
     hooks:
       - id: remove-crlf
       - id: remove-tabs
@@ -25,13 +25,13 @@ repos:
     hooks:
       - id: fix-smartquotes
   - repo: https://github.com/bridgecrewio/checkov.git
-    rev: 2.3.324
+    rev: 2.4.2
     hooks:
       - id: checkov
         args: [--soft-fail]
         verbose: false
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.81.1
+    rev: v1.82.0
     hooks:
       - id: terraform_fmt
         files: .*.tf
