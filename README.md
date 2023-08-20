@@ -10,8 +10,8 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | >=2.9.11 |
-| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+| <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | 2.9.14 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.5.1 |
 
 ## Modules
 

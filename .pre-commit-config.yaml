@@ -35,10 +35,8 @@ repos:
     hooks:
       - id: terraform_fmt
         files: .*.tf
-      #- id: terraform_validate
-      #  files: .*
-  - repo: https://github.com/terraform-docs/terraform-docs
     # yamllint disable-line
+  - repo: https://github.com/terraform-docs/terraform-docs
     rev: "v0.16.0"
     hooks:
       - id: terraform-docs-go
