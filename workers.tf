@@ -4,7 +4,7 @@ locals {
   local_workers = flatten([for pool in var.pools : [
     for worker in range(pool.workers) : {
       name   = "${var.cluster_name}-${pool.name}-worker-node-${worker}"
-      node   = pool.node != "" ? pool.node : random_shuffle.random_node.result[0]
+      node   = pool.node != "" ? pool.node : "random"
       pool   = pool.pool
       cores  = pool.cores
       memory = pool.memory
@@ -49,7 +49,7 @@ resource "proxmox_vm_qemu" "worker" {
   nameserver             = var.cloudinit_nameserver
   ipconfig0              = each.value.ipconfig0
   ssh_user               = each.value.ssh_user
-  target_node            = each.value.node
+  target_node            = each.value.node != "random" ? each.value.node : element(random_shuffle.random_node.result, substr(each.key, -1, -1))
   pool                   = each.value.pool
   cores                  = each.value.cores
   sockets                = var.vm_sockets
@@ -86,12 +86,6 @@ resource "proxmox_vm_qemu" "worker" {
     type = "socket"
   }
 
-  connection {
-    type = "ssh"
-    host = self.ssh_host
-    user = self.ssh_user
-  }
-
   provisioner "file" {
     destination = "/tmp/config.yaml"
     content = templatefile("${path.module}/templates/k3s/agent.yaml", {
@@ -106,7 +100,7 @@ resource "proxmox_vm_qemu" "worker" {
       type        = "ssh"
       host        = self.ssh_host
       user        = self.ssh_user
-      private_key = file(var.private_ssh_key)
+      private_key = var.private_ssh_key
     }
   }
   provisioner "remote-exec" {
@@ -119,7 +113,7 @@ resource "proxmox_vm_qemu" "worker" {
       type        = "ssh"
       host        = self.ssh_host
       user        = self.ssh_user
-      private_key = file(var.private_ssh_key)
+      private_key = var.private_ssh_key
     }
   }
 

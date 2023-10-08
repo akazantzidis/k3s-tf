@@ -12,7 +12,6 @@ locals {
   start_ip_master = var.masters.master_start_index != "" ? var.masters.master_start_index : (cidrhost(var.masters.subnet, 1) == var.masters.gw ? element(split(".", cidrhost(var.masters.subnet, 1)), 3) + 1 : element(split(".", cidrhost(var.masters.subnet, 1)), 3))
   local_masters = { for i, v in range(local.masters_count) : v => {
     name          = "${var.cluster_name}-control-node-${i}"
-    node          = var.masters.node != "" ? var.masters.node : random_shuffle.random_node.result[0]
     pool          = var.masters.pool
     cores         = var.masters.cores
     memory        = var.masters.memory
@@ -49,7 +48,7 @@ resource "proxmox_vm_qemu" "master" {
   nameserver             = var.cloudinit_nameserver
   ipconfig0              = each.value.ipconfig0
   ssh_user               = each.value.ssh_user
-  target_node            = each.value.node
+  target_node            = var.masters.node != "" ? var.masters.node : element(random_shuffle.random_node.result, substr(each.key, -1, -1))
   pool                   = each.value.pool
   cores                  = each.value.cores
   sockets                = var.vm_sockets
@@ -86,12 +85,6 @@ resource "proxmox_vm_qemu" "master" {
     type = "socket"
   }
 
-  connection {
-    type = "ssh"
-    host = self.ssh_host
-    user = self.ssh_user
-  }
-
   provisioner "file" {
     destination = "/tmp/config.yaml"
     content = templatefile("${path.module}/templates/k3s/server.yaml", {
@@ -120,7 +113,7 @@ resource "proxmox_vm_qemu" "master" {
       type        = "ssh"
       host        = self.ssh_host
       user        = self.ssh_user
-      private_key = file(var.private_ssh_key)
+      private_key = var.private_ssh_key
     }
   }
 
@@ -134,7 +127,7 @@ resource "proxmox_vm_qemu" "master" {
       type        = "ssh"
       host        = self.ssh_host
       user        = self.ssh_user
-      private_key = file(var.private_ssh_key)
+      private_key = var.private_ssh_key
     }
   }
 
@@ -157,14 +150,14 @@ resource "proxmox_vm_qemu" "master" {
       type        = "ssh"
       host        = self.ssh_host
       user        = self.ssh_user
-      private_key = file(var.private_ssh_key)
+      private_key = var.private_ssh_key
     }
   }
   provisioner "remote-exec" {
     # Checks if it is running in a non-first master,if true joins itself to the first master, else exits without error
     inline = [
       "if ip a | grep inet | awk '{print $2}' | grep -w ${cidrhost(var.masters.subnet, local.start_ip_master)};then exit 0;fi",
-      "sleep $((RANDOM % 30))",
+      "while true;do curl -sSL https://${local.vip}:6443;if test $? -ne 0; then break;else sleep 1;fi;done",
       "sudo mkdir -p /etc/rancher/k3s",
       "sudo mv /tmp/config.yaml /etc/rancher/k3s/config.yaml",
       "if ${var.kube_vip_enable} == true;then sudo mkdir -p /var/lib/rancher/k3s/server/manifests && sudo cp /tmp/kube-vip.yaml /var/lib/rancher/k3s/server/manifests/kube-vip.yaml;else rm /tmp/kube-vip.yaml ;fi",
@@ -175,7 +168,7 @@ resource "proxmox_vm_qemu" "master" {
       type        = "ssh"
       host        = self.ssh_host
       user        = self.ssh_user
-      private_key = file(var.private_ssh_key)
+      private_key = var.private_ssh_key
     }
   }
   lifecycle {

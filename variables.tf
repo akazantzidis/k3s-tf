@@ -248,7 +248,7 @@ variable "k3s_snapshotter" {
 
 variable "private_ssh_key" {
   type        = string
-  description = "The path is stored the private ssh key which matches the ssh authorized keys which were set"
+  description = "SSH private key to be used during provisioning.[The public one should exist in the nodes during provisioning]"
 }
 
 variable "k3s_version" {

@@ -36,29 +36,21 @@ subjects:
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  creationTimestamp: null
+  labels:
+    app.kubernetes.io/name: kube-vip-ds
+    app.kubernetes.io/version: v0.6.3
   name: kube-vip-ds
   namespace: kube-system
 spec:
   selector:
     matchLabels:
-      name: kube-vip-ds
+      app.kubernetes.io/name: kube-vip-ds
   template:
     metadata:
-      creationTimestamp: null
       labels:
-        name: kube-vip-ds
+        app.kubernetes.io/name: kube-vip-ds
+        app.kubernetes.io/version: v0.6.3
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: node-role.kubernetes.io/master
-                operator: Exists
-            - matchExpressions:
-              - key: node-role.kubernetes.io/control-plane
-                operator: Exists
       containers:
       - args:
         - manager
@@ -77,10 +69,10 @@ spec:
           value: kube-system
         - name: vip_ddns
           value: "false"
-        - name: svc_enable
-          value: "true"
         - name: vip_leaderelection
           value: "true"
+        - name: vip_leasename
+          value: plndr-cp-lock
         - name: vip_leaseduration
           value: "5"
         - name: vip_renewdeadline
@@ -89,7 +81,9 @@ spec:
           value: "1"
         - name: address
           value: ${vip}
-        image: ghcr.io/kube-vip/kube-vip:v0.6.0
+        - name: prometheus_server
+          value: :2112
+        image: ghcr.io/kube-vip/kube-vip:v0.6.3
         imagePullPolicy: Always
         name: kube-vip
         resources: {}
@@ -98,8 +92,18 @@ spec:
             add:
             - NET_ADMIN
             - NET_RAW
-            - SYS_TIME
+        volumeMounts:
+        - mountPath: /etc/kubernetes/admin.conf
+          name: kubeconfig
+      hostAliases:
+      - hostnames:
+        - kubernetes
+        ip: 127.0.0.1
       hostNetwork: true
+      volumes:
+      - hostPath:
+          path: /etc/rancher/k3s/k3s.yaml
+        name: kubeconfig
       serviceAccountName: kube-vip
       tolerations:
       - effect: NoSchedule
