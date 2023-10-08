@@ -7,7 +7,7 @@ variable "ha_control_plane" {
 variable "cluster_name" {
   description = "Cluster name."
   type        = string
-  default     = "test-cluster"
+  default     = "default-cluster"
 }
 
 variable "masters" {
@@ -113,67 +113,46 @@ variable "vm_boot" {
   default     = "order=virtio0"
 }
 
-variable "subnet" {
-  description = ""
-  type        = string
-  default     = "192.168.1.1/24"
-
-  validation {
-    condition     = can(cidrsubnet(var.subnet, 0, 0))
-    error_message = "Not valid subnet CIDR"
-  }
-}
-
-variable "gw" {
-  type    = string
-  default = "192.168.1.1"
-
-  validation {
-    condition     = can(regex("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", var.gw))
-    error_message = "Not valid gateway ip address"
-  }
-}
-
 variable "k3s_master_kubelet_args" {
   description = "k3s masters kubelet arguments"
   type        = list(string)
-  default     = ["feature-gates=MixedProtocolLBService=true"]
+  default     = []
 }
 
 variable "k3s_worker_kubelet_args" {
   description = "k3s workers kubelet arguments"
   type        = list(string)
-  default     = ["feature-gates=MixedProtocolLBService=true"]
+  default     = []
 }
 
 variable "k3s_kube_control_manag_args" {
   description = "k3s controller-manager extra configuration"
   type        = list(string)
-  default     = ["feature-gates=MixedProtocolLBService=true", "bind-address=0.0.0.0"]
+  default     = ["bind-address=0.0.0.0"]
 }
 
 variable "k3s_kube_proxy_args" {
   description = "k3s kube-proxy extra configuration"
   type        = list(string)
-  default     = ["feature-gates=MixedProtocolLBService=true", "bind-address=0.0.0.0"]
+  default     = ["bind-address=0.0.0.0"]
 }
 
 variable "k3s_kube_sched_args" {
   description = "k3s scheduler extra configuration"
   type        = list(string)
-  default     = ["feature-gates=MixedProtocolLBService=true", "bind-address=0.0.0.0"]
+  default     = ["bind-address=0.0.0.0"]
 }
 
 variable "k3s_kube_apiserver_args" {
   description = "k3s api server extra configuration"
   type        = list(string)
-  default     = ["feature-gates=MixedProtocolLBService=true"]
+  default     = []
 }
 
 variable "k3s_master_node_taints" {
   description = "k3s master taints"
   type        = list(string)
-  default     = ["k3s-controlplane=true:NoExecute", "CriticalAddonsOnly=true:NoExecute"]
+  default     = [] #["k3s-controlplane=true:NoExecute", "CriticalAddonsOnly=true:NoExecute"]
 }
 
 variable "k3s_worker_node_taints" {
@@ -251,7 +230,7 @@ variable "k3s_flannel_backend" {
 variable "k3s_disable" {
   description = "k3s addons disable configuration"
   type        = list(string)
-  default     = ["traefik", "servicelb", "local-storage"] #"metrics-server",
+  default     = []
 }
 
 variable "k3s_worker_protect_kernel_defaults" {
@@ -270,7 +249,6 @@ variable "k3s_snapshotter" {
 variable "private_ssh_key" {
   type        = string
   description = "The path is stored the private ssh key which matches the ssh authorized keys which were set"
-  default     = "~/.ssh/id_ed25519"
 }
 
 variable "k3s_version" {

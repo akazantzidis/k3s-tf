@@ -1,4 +1,3 @@
-
 resource "random_password" "k3s-token" {
   length           = 64
   special          = false
