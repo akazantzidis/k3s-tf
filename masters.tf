@@ -18,7 +18,7 @@ locals {
     bridge        = var.masters.bridge
     tag           = var.masters.tag
     tags          = join(" ", concat([for i in var.masters.tags : i], ["cluster-${var.cluster_name}"], ["control-node"]))
-    ipconfig0     = var.masters.ipconfig0 != "dhcp" ? "ip=${cidrhost(var.masters.subnet, local.start_ip_master + i)}/${element(split("/", var.masters.subnet), 1)},gw=${var.masters.gw}" : "dhcp"
+    ipconfig0     = "ip=${cidrhost(var.masters.subnet, local.start_ip_master + i)}/${element(split("/", var.masters.subnet), 1)},gw=${var.masters.gw}"
     scsihw        = var.masters.scsihw
     disks         = var.masters.disks
     image         = var.masters.image
