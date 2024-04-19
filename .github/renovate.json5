@@ -9,6 +9,11 @@
     ":separatePatchReleases",
     "docker:enableMajor"
   ],
+	"packageRules": [{
+		"description": "Automerge non-major updates",
+		"matchUpdateTypes": ["minor", "patch"],
+		"automerge": true
+	}],
   "vulnerabilityAlerts": {
     "enabled": true
   },
