@@ -1,35 +1,39 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    ":enableRenovate",
-    "config:base",
-    ":disableRateLimiting",
-    ":dependencyDashboard",
-    ":semanticCommits",
-    ":separatePatchReleases",
-    "docker:enableMajor"
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    ':enableRenovate',
+    'config:recommended',
+    ':disableRateLimiting',
+    ':dependencyDashboard',
+    ':semanticCommits',
+    ':separatePatchReleases',
+    'docker:enableMajor',
   ],
-  "automerge": true,
-  "vulnerabilityAlerts": {
-    "enabled": true
+  automerge: true,
+  vulnerabilityAlerts: {
+    enabled: true,
   },
-  "rangeStrategy": "widen",
-  "platform": "github",
-  "onboarding": false,
-  "requireConfig": false,
-  "timezone": "Europe/Athens",
-  "dependencyDashboardTitle": "Renovate Dashboard 🤖",
-  "commitBody": "Signed-off-by: Alexandros Kazantzidis <akazantzidis@users.noreply.github.com>",
-  "suppressNotifications": ["prIgnoreNotification"],
-  "rebaseWhen": "conflicted",
-  "rollbackPrs": true,
-  "reviewers": ["akazantzidis"],
-  "pre-commit": {
-    "enabled": true
+  rangeStrategy: 'widen',
+  platform: 'github',
+  onboarding: false,
+  requireConfig: 'optional',
+  timezone: 'Europe/Athens',
+  dependencyDashboardTitle: 'Renovate Dashboard 🤖',
+  commitBody: 'Signed-off-by: Alexandros Kazantzidis <akazantzidis@users.noreply.github.com>',
+  suppressNotifications: [
+    'prIgnoreNotification',
+  ],
+  rebaseWhen: 'conflicted',
+  rollbackPrs: true,
+  reviewers: [
+    'akazantzidis',
+  ],
+  'pre-commit': {
+    enabled: true,
   },
-  "terraform": {
-    "fileMatch": [
-      ".+\\.tf$"
-    ]
-  }
+  terraform: {
+    managerFilePatterns: [
+      '/.+\\.tf$/',
+    ],
+  },
 }
