@@ -31,7 +31,7 @@ repos:
         args: [--soft-fail]
         verbose: false
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.101.0
+    rev: v1.101.1
     hooks:
       - id: terraform_fmt
         files: .*.tf
