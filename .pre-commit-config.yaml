@@ -25,7 +25,7 @@ repos:
     hooks:
       - id: fix-smartquotes
   - repo: https://github.com/bridgecrewio/checkov.git
-    rev: 3.2.485
+    rev: 3.2.486
     hooks:
       - id: checkov
         args: [--soft-fail]
