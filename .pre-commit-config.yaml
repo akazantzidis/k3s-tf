@@ -37,7 +37,7 @@ repos:
         files: .*.tf
     # yamllint disable-line
   - repo: https://github.com/terraform-docs/terraform-docs
-    rev: "v0.20.0"
+    rev: "v0.21.0"
     hooks:
       - id: terraform-docs-go
         # yamllint disable-line
